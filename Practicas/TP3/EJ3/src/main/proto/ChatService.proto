@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package pdytr.example.grpc;
+
+import "google/protobuf/timestamp.proto";
+option java_multiple_files = true; // Si no agrego esto, por alguna razón mística no genera las clases en archivos .java separados
+
+// Mensaje que envía el cliente al servidor
+message ChatMessage {
+  string from = 1;
+  string message = 2;
+}
+
+// Mensaje servidor --> cliente
+message ChatMessageFromServer {
+  google.protobuf.Timestamp timestamp = 1;
+  string from = 2;
+  string message = 3;
+}
+
+// Confirmación para conectar/desconectar
+message Confirm {
+  string message = 1;
+  bool success = 2;
+}
+
+service ChatService {
+  // Para conexión del usuario
+  rpc Connect(ChatMessage) returns (Confirm);
+
+  // Para desconexión del usuario
+  rpc Disconnect(ChatMessage) returns (Confirm);
+
+  // Chat grupal con streaming bidireccional
+  rpc Chat(stream ChatMessage) returns (stream ChatMessageFromServer);
+}

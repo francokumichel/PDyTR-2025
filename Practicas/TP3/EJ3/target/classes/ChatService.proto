@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package pdytr.example.grpc;
+
+import "google/protobuf/timestamp.proto";
+option java_multiple_files = true;
+
+// Mensaje que envía el cliente al servidor
+message ChatMessage {
+  string from = 1;
+  string message = 2;
+}
+
+// Mensaje que envía el servidor a los clientes
+message ChatMessageFromServer {
+  google.protobuf.Timestamp timestamp = 1;
+  string from = 2;
+  string message = 3;
+}
+
+// Respuesta de confirmación para conectar/desconectar
+message Confirm {
+  string message = 1;
+  bool success = 2;
+}
+
+// Servicio principal
+service ChatService {
+  // Conectar usuario
+  rpc Connect(ChatMessage) returns (Confirm);
+
+  // Desconectar usuario
+  rpc Disconnect(ChatMessage) returns (Confirm);
+
+  // Chat grupal con streaming bidireccional
+  rpc Chat(stream ChatMessage) returns (stream ChatMessageFromServer);
+}
